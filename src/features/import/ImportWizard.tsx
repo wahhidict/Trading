@@ -38,10 +38,11 @@ export default function ImportWizard(): React.ReactNode {
   const closeImport = useStore((s) => s.closeImport)
   const metas = useStore((s) => s.metas)
   const setMetas = useStore((s) => s.setMetas)
-  const symbol = useStore((s) => s.symbol)
-  const tf = useStore((s) => s.tf)
-  const setSymbol = useStore((s) => s.setSymbol)
-  const setTf = useStore((s) => s.setTf)
+  const activePane = useStore((s) => s.activePane)
+  const paneSymbol = useStore((s) => s.panes[s.activePane]?.symbol ?? null)
+  const paneTf = useStore((s) => s.panes[s.activePane]?.tf ?? null)
+  const setPaneSymbol = useStore((s) => s.setPaneSymbol)
+  const setPaneTf = useStore((s) => s.setPaneTf)
   const setStatus = useStore((s) => s.setStatus)
 
   const [step, setStep] = useState(0)
@@ -153,8 +154,8 @@ export default function ImportWizard(): React.ReactNode {
       const { allDatasets } = await import('../../core/db')
       setMetas(await allDatasets())
       setStatus(t('saved'))
-      if (!symbol) setSymbol(symbolName)
-      if (!tf) setTf(useTf)
+      if (!paneSymbol) setPaneSymbol(activePane, symbolName)
+      if (!paneTf) setPaneTf(activePane, useTf)
       setSavedMsg(`${candles.length} ${t('candles')}${mode === 'merge' ? ' · ' + t('done') : ''}`)
       setStep(3)
     } catch (e) {
@@ -162,7 +163,7 @@ export default function ImportWizard(): React.ReactNode {
     } finally {
       setBusy(false)
     }
-  }, [final_, tfChoice, symbolName, timezone, mode, symbol, tf, setMetas, setStatus, setSymbol, setTf, t])
+  }, [final_, tfChoice, symbolName, timezone, mode, paneSymbol, paneTf, activePane, setMetas, setStatus, setPaneSymbol, setPaneTf, t])
 
   if (!importOpen) return null
 

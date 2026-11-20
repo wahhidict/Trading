@@ -7,10 +7,12 @@ import type { TfKey } from '../../core/types'
 export default function Watchlist(): React.ReactNode {
   const { t } = useT()
   const metas = useStore((s) => s.metas)
-  const symbol = useStore((s) => s.symbol)
-  const tf = useStore((s) => s.tf)
-  const setSymbol = useStore((s) => s.setSymbol)
-  const setTf = useStore((s) => s.setTf)
+  const activePane = useStore((s) => s.activePane)
+  const pane = useStore((s) => s.panes[s.activePane])
+  const symbol = pane?.symbol ?? null
+  const tf = pane?.tf ?? null
+  const setPaneSymbol = useStore((s) => s.setPaneSymbol)
+  const setPaneTf = useStore((s) => s.setPaneTf)
   const openImport = useStore((s) => s.openImport)
 
   const symbols = useMemo(() => [...new Set(metas.map((m) => m.symbol))].sort(), [metas])
@@ -30,7 +32,7 @@ export default function Watchlist(): React.ReactNode {
             <div key={sym} className="border-b border-border/60" data-testid={'wl-' + sym}>
               <button
                 className={`flex w-full items-center justify-between px-3 py-2 text-start text-xs ${symbol === sym ? 'bg-panel2 text-txt' : 'text-muted hover:bg-panel2/60'}`}
-                onClick={() => setSymbol(sym)}
+                onClick={() => setPaneSymbol(activePane, sym)}
               >
                 <span className="font-bold">{sym}</span>
                 <span className="text-[10px]">{metas.filter((m) => m.symbol === sym).reduce((n, m) => n + m.count, 0).toLocaleString()} {t('candles')}</span>
@@ -41,7 +43,7 @@ export default function Watchlist(): React.ReactNode {
                     key={k}
                     data-testid={'wl-tf-' + k}
                     className={`rounded px-1.5 py-0.5 text-[10px] ${symbol === sym && tf === k ? 'bg-accent text-white' : 'bg-panel2 text-muted hover:text-txt'}`}
-                    onClick={() => { setSymbol(sym); setTf(k) }}
+                    onClick={() => { setPaneSymbol(activePane, sym); setPaneTf(activePane, k) }}
                   >
                     {TFDEFS.find((d) => d.key === (k as TfKey))?.label ?? k}
                   </button>

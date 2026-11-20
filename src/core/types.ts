@@ -9,6 +9,8 @@ export interface Candle {
 
 export type TfKey = '1m' | '3m' | '5m' | '15m' | '30m' | '1h' | '2h' | '4h' | '8h' | '1D' | '1W' | '1M' | 'custom'
 
+export type ChartKind = 'candle' | 'bar' | 'line' | 'area' | 'ha'
+
 export interface DatasetMeta {
   id: string
   symbol: string
@@ -58,4 +60,80 @@ export interface ParseOptions {
 
 export const EMPTY_MAP: ColumnMap = {
   dateCol: -1, timeCol: -1, tsCol: -1, openCol: -1, highCol: -1, lowCol: -1, closeCol: -1, volCol: -1,
+}
+
+export interface SavedPoint {
+  timestamp?: number
+  value?: number
+}
+
+export interface SavedOverlay {
+  ovId: string
+  name: string
+  points: SavedPoint[]
+  styles?: unknown
+  lock?: boolean
+  visible?: boolean
+  extendData?: unknown
+}
+
+export interface SymbolDrawings {
+  id: string
+  items: SavedOverlay[]
+  updatedAt: number
+}
+
+export interface RiskSettings {
+  balance: number
+  riskPct: number
+  tickSize: number
+  pointValue: number
+  contractSize: number
+}
+
+export interface IndicatorConf {
+  key: string
+  name: string
+  params: number[]
+  colors: string[]
+  visible: boolean
+  onMain: boolean
+}
+
+export interface PaneState {
+  symbol: string | null
+  tf: TfKey | null
+  chartType: ChartKind
+  indicators: IndicatorConf[]
+}
+
+export interface ReplayState {
+  active: boolean
+  endTime: number | null
+  startTime: number | null
+  playing: boolean
+  speed: number
+}
+
+export interface BackupFile {
+  version: number
+  exportedAt: number
+  workspaces: WorkspaceRecord[]
+  drawings: SymbolDrawings[]
+  settings: Record<string, unknown>
+}
+
+export interface WorkspaceSnapshot {
+  panes: PaneState[]
+  layout: number
+  activePane: number
+  settings: Record<string, unknown>
+  drawings: SymbolDrawings[]
+}
+
+export interface WorkspaceRecord {
+  id: string
+  name: string
+  updatedAt: number
+  snapshot: WorkspaceSnapshot
 }

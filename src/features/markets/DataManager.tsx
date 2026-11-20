@@ -12,10 +12,12 @@ export default function DataManager(): React.ReactNode {
   const metas = useStore((s) => s.metas)
   const setMetas = useStore((s) => s.setMetas)
   const openImport = useStore((s) => s.openImport)
-  const symbol = useStore((s) => s.symbol)
-  const tf = useStore((s) => s.tf)
-  const setSymbol = useStore((s) => s.setSymbol)
-  const setTf = useStore((s) => s.setTf)
+  const activePane = useStore((s) => s.activePane)
+  const pane = useStore((s) => s.panes[s.activePane])
+  const symbol = pane?.symbol ?? null
+  const tf = pane?.tf ?? null
+  const setPaneSymbol = useStore((s) => s.setPaneSymbol)
+  const setPaneTf = useStore((s) => s.setPaneTf)
 
   const onDelete = async (id: string): Promise<void> => {
     if (!window.confirm(t('confirmDelete'))) return
@@ -45,7 +47,7 @@ export default function DataManager(): React.ReactNode {
       <div className="flex-1 overflow-y-auto">
         {metas.map((m) => (
           <div key={m.id} className="border-b border-border/60 px-3 py-2 text-xs">
-            <button className="flex w-full items-center justify-between" onClick={() => { setSymbol(m.symbol); setTf(m.tf) }}>
+            <button className="flex w-full items-center justify-between" onClick={() => { setPaneSymbol(activePane, m.symbol); setPaneTf(activePane, m.tf) }}>
               <span className={`font-bold ${symbol === m.symbol && tf === m.tf ? 'text-txt' : 'text-muted'}`}>{m.symbol} · {TFDEFS.find((d) => d.key === m.tf)?.label ?? m.tf}</span>
               <span className="text-[10px] text-muted">{m.count.toLocaleString()} {t('candles')}</span>
             </button>

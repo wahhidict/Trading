@@ -3,153 +3,180 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Trading — منصة الشموع المحلية</title>
+<title>Trading</title>
 <style>
   :root{
-    --bg:#0f1420; --bg2:#131722; --panel:#161b27; --panel2:#1e2433; --panel3:#242b3d;
-    --border:#262c3d; --border2:#333a4f;
-    --text:#e3e6ee; --muted:#7c8296; --accent:#3b6ff6;
-    --up:#22ab94; --down:#f23645; --gold:#f0b90b;
+    --bg:#131722; --panel:#1e222d; --panel2:#252a36; --hover:#2a2e39; --panel3:#2a2e39;
+    --border:#2a2e39; --border2:#363a45;
+    --text:#d1d4dc; --muted:#787b86; --accent:#2962ff;
+    --up:#26a69a; --down:#ef5350; --gold:#f0b90b;
   }
   *{box-sizing:border-box}
   html,body{height:100%;margin:0}
-  body{background:var(--bg);color:var(--text);font-family:"Segoe UI",Tahoma,Arial,sans-serif;font-size:14px;overflow:hidden;-webkit-font-smoothing:antialiased}
-  #app{display:flex;height:100vh}
-  #sidebar{width:248px;background:var(--panel);border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
-  .side-head{padding:14px;border-bottom:1px solid var(--border)}
-  .logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px}
-  .logo .dot{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,#3b6ff6,#7c4dff);display:flex;align-items:center;justify-content:center;font-size:14px}
-  .side-head small{display:block;color:var(--muted);margin-top:5px;font-weight:400;font-size:11px;line-height:1.6}
-  #addForm{display:flex;gap:6px;padding:10px;border-bottom:1px solid var(--border)}
-  #newName{flex:1;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:13px;outline:none;min-width:0}
-  #newName:focus{border-color:var(--accent)}
-  #addForm button{background:var(--accent);border:none;color:#fff;border-radius:8px;width:38px;font-size:18px;cursor:pointer}
-  #addForm button:hover{filter:brightness(1.15)}
-  #pairList{list-style:none;margin:0;padding:8px;overflow-y:auto;flex:1}
-  #pairList li{display:flex;align-items:center;gap:7px;padding:9px 11px;border-radius:8px;cursor:pointer;margin-bottom:2px;border:1px solid transparent}
-  #pairList li:hover{background:var(--panel2)}
-  #pairList li.active{background:#1c2740;border-color:#2c3d66}
-  #pairList .pname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:ltr;text-align:right;font-weight:600;font-size:13px}
-  #pairList .pcount{color:var(--muted);font-size:10.5px;background:var(--panel3);padding:2px 7px;border-radius:99px}
-  #pairList .pdel{color:var(--muted);border:none;background:none;cursor:pointer;font-size:13px;padding:3px 5px;border-radius:5px}
-  #pairList .pdel:hover{color:var(--down);background:rgba(242,54,69,.14)}
-  .side-foot{padding:11px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
-  .hint{color:var(--muted);font-size:10.5px;line-height:1.7}
-  #main{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--bg2)}
-  #topbar{display:flex;align-items:center;gap:5px;padding:7px 10px;background:var(--panel);border-bottom:1px solid var(--border);flex-wrap:wrap}
-  .tgroup{display:flex;gap:2px;background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:2px}
-  .tbtn{background:transparent;border:1px solid transparent;color:var(--text);padding:6px 10px;border-radius:7px;cursor:pointer;font-size:12.5px;font-family:inherit;transition:background .12s;display:inline-flex;align-items:center;gap:5px}
-  .tbtn:hover{background:var(--panel3)}
-  .tbtn.active{background:var(--accent);color:#fff}
-  .tbtn:disabled{opacity:.4;cursor:not-allowed}
-  .tbtn.danger:hover{color:var(--down);background:rgba(242,54,69,.12)}
-  .sep{width:1px;height:24px;background:var(--border2);margin:0 6px}
-  select.tbtn{appearance:auto;padding:5px 8px;background:var(--panel2);border-color:var(--border)}
-  label.ck{display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;background:var(--panel2);border:1px solid var(--border);padding:6px 9px;border-radius:7px;user-select:none}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;font-size:13px;overflow:hidden;-webkit-font-smoothing:antialiased}
+  #app{display:flex;flex-direction:column;height:100vh}
+  #app.nosb #sidebar{display:none}
+
+  /* ====== الشريط العلوي ====== */
+  #topbar{height:42px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 8px;gap:2px;flex-shrink:0}
+  .icon-btn{min-width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:transparent;border:none;border-radius:6px;color:var(--text);cursor:pointer;padding:0 8px;font-family:inherit;font-size:12.5px}
+  .icon-btn:hover{background:var(--hover)}
+  .icon-btn:disabled{opacity:.35;cursor:not-allowed}
+  .icon-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .icon-btn.danger:hover{color:var(--down)}
+  .icon-btn.accent{color:#fff;background:var(--accent)}
+  .icon-btn.accent:hover{filter:brightness(1.15)}
+  .icon-btn.rp-on{background:#b23b00;color:#fff}
+  .tb-sep{width:1px;height:22px;background:var(--border);margin:0 6px;flex-shrink:0}
+  .symbtn{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14.5px;direction:ltr;padding:5px 12px;border-radius:6px;cursor:default}
+  .symbtn:hover{background:var(--hover)}
+  .symbtn .cov{width:7px;height:7px;border-radius:2px;background:var(--up)}
+  select.icon-btn{appearance:auto;min-width:0;padding:0 8px;background:transparent;border:none;color:var(--text)}
+  select.icon-btn:hover{background:var(--hover)}
+  label.ck{display:inline-flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;padding:0 8px;height:32px;border-radius:6px;user-select:none;color:#b2b5be}
+  label.ck:hover{background:var(--hover)}
   label.ck input{accent-color:var(--accent);cursor:pointer}
-  .swatch{width:17px;height:17px;border-radius:5px;cursor:pointer;border:2px solid transparent;padding:0}
-  .swatch.sel{border-color:#fff}
-  #rpBtn.active{background:#b23b00}
-  #chartWrap{position:relative;flex:1;min-height:0}
+  .spacer{flex:1}
+
+  /* ====== الجسم: شريط أدوات + شارت + قائمة ====== */
+  #body{flex:1;display:flex;min-height:0}
+  #lbar{width:48px;background:var(--panel);border-left:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:2px 0;gap:1px;flex-shrink:0;overflow-y:auto}
+  #lbar .tool-btn{width:40px;height:36px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;border-radius:6px;color:#b2b5be;cursor:pointer;position:relative}
+  #lbar .tool-btn:hover{background:var(--hover);color:#fff}
+  #lbar .tool-btn.active{background:var(--accent);color:#fff}
+  #lbar .tool-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  #lbar .tb-sep{width:26px;height:1px;background:var(--border);margin:5px 0}
+  #colorGroup{display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0}
+  .swatch{width:16px;height:16px;border-radius:50%;cursor:pointer;border:2px solid transparent;padding:0}
+  .swatch.sel{border-color:#fff;box-shadow:0 0 0 2px var(--accent)}
+
+  #chartArea{flex:1;position:relative;min-width:0;background:var(--bg)}
   #chart{display:block;width:100%;height:100%;cursor:crosshair;touch-action:none}
-  #legend{position:absolute;top:9px;left:12px;direction:ltr;font-size:12px;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.9);line-height:1.75;z-index:2}
-  #legend .sym{font-weight:800;font-size:15px;color:#fff}
-  #legend .tf{color:var(--muted);font-weight:600;font-size:11px;margin-left:6px}
-  .badge{display:inline-block;background:var(--panel3);border:1px solid var(--border2);color:var(--gold);font-size:10px;font-weight:700;padding:1px 7px;border-radius:99px;margin-right:6px;vertical-align:1px}
-  #replayBar{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);z-index:5;display:flex;align-items:center;gap:6px;background:rgba(22,27,39,.97);border:1px solid var(--border2);border-radius:12px;padding:7px 10px;box-shadow:0 8px 28px rgba(0,0,0,.5)}
-  #replayBar .rbtn{background:var(--panel3);border:1px solid var(--border2);color:var(--text);width:34px;height:30px;border-radius:8px;cursor:pointer;font-size:13px;display:inline-flex;align-items:center;justify-content:center}
-  #replayBar .rbtn:hover{filter:brightness(1.3)}
-  #replayBar .rbtn.play{background:var(--accent);border-color:var(--accent);color:#fff;width:42px}
-  #replayBar select{background:var(--panel3);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:5px 6px;font-size:12px;font-family:inherit;outline:none}
-  #rpPos{direction:ltr;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:74px;text-align:center}
-  #replayBar .xbtn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;padding:4px 6px;border-radius:6px}
-  #replayBar .xbtn:hover{color:var(--down)}
-  #hintbar{position:absolute;bottom:6px;left:12px;z-index:4;font-size:11.5px;color:var(--muted);pointer-events:none;text-shadow:0 1px 2px #000}
-  #emptyState{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:6;background:radial-gradient(ellipse at center,rgba(19,23,34,.35),rgba(15,20,32,.88));text-align:center;padding:20px}
-  #emptyState h2{margin:0;font-size:21px;font-weight:800}
-  #emptyState p{margin:0;color:var(--muted);max-width:460px;line-height:1.9}
+  #legend{position:absolute;top:8px;left:12px;direction:ltr;font-size:12px;pointer-events:none;line-height:1.7;z-index:2;text-shadow:0 1px 2px rgba(0,0,0,.7)}
+  #legend .sym{font-weight:700;font-size:15.5px;color:#fff;letter-spacing:.3px}
+  #legend .tf{color:var(--muted);font-weight:500;font-size:11.5px;margin-left:7px}
+  .badge{display:inline-block;background:rgba(178,59,0,.9);color:#fff;font-size:10px;font-weight:700;padding:1px 8px;border-radius:99px;margin-left:8px;vertical-align:1px}
+  #hintbar{position:absolute;bottom:7px;left:12px;z-index:4;font-size:11.5px;color:var(--muted);pointer-events:none;text-shadow:0 1px 2px #000}
+
+  #replayBar{position:absolute;bottom:44px;left:50%;transform:translateX(-50%);z-index:5;display:flex;align-items:center;gap:5px;background:var(--panel);border:1px solid var(--border2);border-radius:9px;padding:5px 8px;box-shadow:0 10px 30px rgba(0,0,0,.55)}
+  #replayBar .rbtn{background:transparent;border:none;color:var(--text);width:34px;height:30px;border-radius:6px;cursor:pointer;font-size:14px;display:inline-flex;align-items:center;justify-content:center}
+  #replayBar .rbtn:hover{background:var(--hover)}
+  #replayBar .rbtn.play{background:var(--accent);color:#fff;width:44px}
+  #replayBar .rbtn.play:hover{filter:brightness(1.15)}
+  #replayBar select{background:var(--panel2);color:var(--text);border:1px solid var(--border2);border-radius:6px;padding:5px 5px;font-size:11.5px;font-family:inherit;outline:none}
+  #rpPos{direction:ltr;font-size:12px;color:#b2b5be;font-variant-numeric:tabular-nums;min-width:76px;text-align:center}
+  #replayBar .xbtn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:4px 6px;border-radius:5px}
+  #replayBar .xbtn:hover{color:var(--down);background:var(--hover)}
+
+  /* ====== قائمة الأزواج (يمين) ====== */
+  #sidebar{width:262px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+  .wl-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border)}
+  .wl-head b{font-size:13.5px}
+  .wl-head span{color:var(--muted);font-size:11px}
+  #addForm{display:flex;gap:6px;padding:10px;border-bottom:1px solid var(--border)}
+  #newName{flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:6px;font-size:12.5px;outline:none;min-width:0;direction:ltr;text-align:left}
+  #newName:focus{border-color:var(--accent)}
+  #addForm button{background:var(--accent);border:none;color:#fff;border-radius:6px;width:34px;font-size:16px;cursor:pointer}
+  #addForm button:hover{filter:brightness(1.15)}
+  #pairList{list-style:none;margin:0;padding:4px;overflow-y:auto;flex:1}
+  #pairList li{display:flex;align-items:center;gap:7px;padding:8px 10px;border-radius:6px;cursor:pointer;margin-bottom:1px;border:1px solid transparent}
+  #pairList li:hover{background:var(--panel2)}
+  #pairList li.active{background:var(--panel3);border-color:var(--border2)}
+  #pairList .pname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:ltr;text-align:left;font-weight:600;font-size:13px}
+  #pairList .pcount{color:var(--muted);font-size:10px;background:var(--bg);padding:2px 6px;border-radius:99px;direction:ltr}
+  #pairList .pdel{color:var(--muted);border:none;background:none;cursor:pointer;font-size:12px;padding:2px 5px;border-radius:4px}
+  #pairList .pdel:hover{color:var(--down);background:rgba(239,83,80,.15)}
+  .wl-foot{padding:10px 12px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:7px}
+  .wl-foot .tbtn{width:100%;justify-content:center}
+  .tbtnx{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit}
+  .tbtnx:hover{background:var(--hover)}
+  .wl-foot .hint{color:var(--muted);font-size:10px;line-height:1.7}
+
+  #emptyState{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;z-index:6;text-align:center;padding:20px}
+  #emptyState h2{margin:0;font-size:20px;font-weight:700;color:#e3e6ee}
+  #emptyState p{margin:0;color:var(--muted);max-width:440px;line-height:1.9}
   #emptyState .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-  #emptyState button{background:var(--accent);border:none;color:#fff;padding:11px 22px;border-radius:9px;font-size:14px;cursor:pointer;font-family:inherit;font-weight:600;box-shadow:0 4px 18px rgba(59,111,246,.35)}
+  #emptyState button{background:var(--accent);border:none;color:#fff;padding:10px 20px;border-radius:7px;font-size:13.5px;cursor:pointer;font-family:inherit;font-weight:600}
   #emptyState button:hover{filter:brightness(1.12)}
-  #emptyState button.ghost{background:transparent;border:1px solid var(--border2);color:var(--text);box-shadow:none}
+  #emptyState button.ghost{background:var(--panel2);border:1px solid var(--border2);color:var(--text)}
+
+  /* ====== شريط الحالة السفلي ====== */
+  #statusbar{height:26px;background:var(--panel);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:14px;font-size:11px;color:var(--muted);flex-shrink:0}
+  #statusbar .sepv{width:1px;height:12px;background:var(--border)}
+  #statusbar .right{margin-inline-start:auto;display:flex;gap:14px;align-items:center}
+
+  /* ====== نافذة الاستيراد ====== */
   .hidden{display:none !important}
-  #overlay{position:fixed;inset:0;background:rgba(5,8,15,.6);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:20}
-  #modal{width:min(700px,94vw);background:var(--panel);border:1px solid var(--border2);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:12px;max-height:90vh;box-shadow:0 20px 60px rgba(0,0,0,.6)}
-  #modal h3{margin:0;font-size:16px}
-  #modal .fmt{color:#9aa3b8;font-size:12px;line-height:1.8;direction:ltr;text-align:left;background:var(--bg2);padding:10px 12px;border-radius:9px;font-family:Consolas,monospace;border:1px solid var(--border)}
+  #overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:20}
+  #modal{width:min(660px,94vw);background:var(--panel);border:1px solid var(--border2);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:12px;max-height:90vh;box-shadow:0 24px 70px rgba(0,0,0,.6)}
+  #modal h3{margin:0;font-size:15px}
+  #modal .fmt{color:#9aa3b8;font-size:12px;line-height:1.8;direction:ltr;text-align:left;background:var(--bg);padding:10px 12px;border-radius:7px;font-family:Consolas,monospace;border:1px solid var(--border)}
   #csvFile{color:var(--text);font-size:12.5px}
-  #csvText{width:100%;height:160px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:Consolas,monospace;font-size:12px;padding:10px;resize:vertical;outline:none}
+  #csvText{width:100%;height:150px;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:Consolas,monospace;font-size:12px;padding:10px;resize:vertical;outline:none}
   #csvText:focus{border-color:var(--accent)}
   .modes{display:flex;gap:18px}
-  .modes label{cursor:pointer}
+  .modes label{cursor:pointer;color:#b2b5be}
   .modes input{accent-color:var(--accent)}
   #modalBtns{display:flex;gap:10px}
   #modalBtns .primary{background:var(--accent);border-color:var(--accent);color:#fff}
-  ::-webkit-scrollbar{width:9px;height:9px}
-  ::-webkit-scrollbar-thumb{background:#38405a;border-radius:5px}
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:#363a45;border-radius:4px}
   ::-webkit-scrollbar-track{background:transparent}
 </style>
 </head>
 <body>
 <div id="app">
-  <aside id="sidebar">
-    <div class="side-head">
-      <div class="logo"><span class="dot">📈</span> Trading <span style="color:var(--muted);font-weight:400;font-size:11px">local</span></div>
-      <small>البيانات والرسوم تُحفظ تلقائيًا في متصفحك ولا تُحذف إلا بأمرك</small>
+
+  <div id="topbar">
+    <button class="icon-btn" id="sbToggle" title="قائمة الأزواج"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+    <div class="symbtn" id="symName"><span class="cov"></span>—</div>
+    <div class="tb-sep"></div>
+    <select class="icon-btn" id="typeSel" title="نوع الرسم">
+      <option value="candles">شموع</option>
+      <option value="line">خط</option>
+      <option value="area">مساحة</option>
+    </select>
+    <div class="tb-sep"></div>
+    <label class="ck"><input type="checkbox" id="ckSma20">MA20</label>
+    <label class="ck"><input type="checkbox" id="ckSma50">MA50</label>
+    <label class="ck"><input type="checkbox" id="ckEma200">EMA200</label>
+    <div class="tb-sep"></div>
+    <button class="icon-btn" id="zoomIn" title="تقريب"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5M8 11h6M11 8v6"/></svg></button>
+    <button class="icon-btn" id="zoomOut" title="تبعيد"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5M8 11h6"/></svg></button>
+    <button class="icon-btn" id="fitBtn" title="إظهار كل الشموع"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M4 15v5h5M20 15v5h-5"/></svg></button>
+    <div class="spacer"></div>
+    <button class="icon-btn" id="undoBtn" title="تراجع (Ctrl+Z)"><svg viewBox="0 0 24 24"><path d="M8 5L3 10l5 5M3 10h11a5 5 0 0 1 0 10h-3"/></svg></button>
+    <button class="icon-btn danger" id="delDrawBtn" title="حذف المحدد (Delete)"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 11v6M14 11v6"/></svg></button>
+    <button class="icon-btn danger" id="clearDrawBtn" title="مسح كل الرسوم"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9l6 6M15 9l-6 6"/></svg></button>
+    <div class="tb-sep"></div>
+    <button class="icon-btn" id="rpBtn" title="وضع الريبلاي — إعادة تشغيل الشموع شمعة بشمعة"><svg viewBox="0 0 24 24"><path d="M4 5v6a8 8 0 1 0 8-8H4"/><path d="M4 1v8h8" transform="translate(0,1)"/></svg> ريبلاي</button>
+    <button class="icon-btn accent" id="importBtn" title="رفع بيانات الشموع (CSV)"><svg viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M4 21h16"/></svg> رفع الشموع</button>
+    <button class="icon-btn" id="exportBtn" title="تصدير CSV"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg></button>
+  </div>
+
+  <div id="body">
+    <div id="lbar">
+      <button class="tool-btn active" data-tool="cursor" title="مؤشر — تحديد وتحريك (Esc)"><svg viewBox="0 0 24 24"><path d="M5 3l14 8-6.5 1.2L9 19z"/></svg></button>
+      <button class="tool-btn" data-tool="trend" title="خط اتجاه"><svg viewBox="0 0 24 24"><path d="M4 20L20 4"/><circle cx="4" cy="20" r="1.6"/><circle cx="20" cy="4" r="1.6"/></svg></button>
+      <button class="tool-btn" data-tool="hline" title="خط أفقي"><svg viewBox="0 0 24 24"><path d="M3 12h18"/><circle cx="7" cy="12" r="1.6"/><circle cx="17" cy="12" r="1.6"/></svg></button>
+      <button class="tool-btn" data-tool="hray" title="شعاع أفقي"><svg viewBox="0 0 24 24"><path d="M3 12h16M16 8.5l4 3.5-4 3.5"/><circle cx="4" cy="12" r="1.6"/></svg></button>
+      <button class="tool-btn" data-tool="vline" title="خط عمودي"><svg viewBox="0 0 24 24"><path d="M12 3v18"/><circle cx="12" cy="7" r="1.6"/><circle cx="12" cy="17" r="1.6"/></svg></button>
+      <button class="tool-btn" data-tool="rect" title="مستطيل"><svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="1"/></svg></button>
+      <button class="tool-btn" data-tool="fib" title="فيبوناتشي"><svg viewBox="0 0 24 24"><path d="M3 5h18M3 9.5h13M3 14.5h18M3 19h13"/></svg></button>
+      <button class="tool-btn" data-tool="text" title="نص"><svg viewBox="0 0 24 24"><path d="M5 6h14M12 6v13M9.5 19h5"/></svg></button>
+      <div class="tb-sep"></div>
+      <div id="colorGroup" title="لون الرسومات"></div>
     </div>
-    <form id="addForm">
-      <input id="newName" placeholder="اسم زوج جديد…" autocomplete="off">
-      <button type="submit" title="إضافة زوج">＋</button>
-    </form>
-    <ul id="pairList"></ul>
-    <div class="side-foot">
-      <button class="tbtn" id="exportBtn" style="background:var(--panel2);border:1px solid var(--border)">⬇ تصدير CSV للزوج الحالي</button>
-      <span class="hint">انقر مرتين على اسم الزوج لتغييره · حذف الزوج (✕) يمسح بياناته ورسومه نهائيًا</span>
-    </div>
-  </aside>
-  <main id="main">
-    <div id="topbar">
-      <div class="tgroup" id="toolsGroup">
-        <button class="tbtn tool-btn active" data-tool="cursor" title="مؤشر — تحديد وتحريك (Esc)">✛</button>
-        <button class="tbtn tool-btn" data-tool="hline" title="خط أفقي">━ H</button>
-        <button class="tbtn tool-btn" data-tool="hray" title="شعاع أفقي">━→</button>
-        <button class="tbtn tool-btn" data-tool="vline" title="خط عمودي">│ V</button>
-        <button class="tbtn tool-btn" data-tool="trend" title="خط اتجاه">╱ TL</button>
-        <button class="tbtn tool-btn" data-tool="rect" title="مستطيل">▭</button>
-        <button class="tbtn tool-btn" data-tool="fib" title="تصحيح فيبوناتشي">ƒ Fib</button>
-        <button class="tbtn tool-btn" data-tool="text" title="نص على الشارت">T نص</button>
-      </div>
-      <div class="tgroup" id="colorGroup" title="لون الرسومات"></div>
-      <div class="sep"></div>
-      <select class="tbtn" id="typeSel" title="نوع الرسم">
-        <option value="candles">🕯 شموع</option>
-        <option value="line">خط</option>
-        <option value="area">مساحة</option>
-      </select>
-      <label class="ck"><input type="checkbox" id="ckSma20">MA20</label>
-      <label class="ck"><input type="checkbox" id="ckSma50">MA50</label>
-      <label class="ck"><input type="checkbox" id="ckEma200">EMA200</label>
-      <div class="sep"></div>
-      <button class="tbtn" id="zoomIn" title="تقريب">➕</button>
-      <button class="tbtn" id="zoomOut" title="تبعيد">➖</button>
-      <button class="tbtn" id="fitBtn" title="إظهار كل الشموع">⤢ ملاءمة</button>
-      <button class="tbtn" id="undoBtn" title="تراجع (Ctrl+Z)">↩ تراجع</button>
-      <div class="sep"></div>
-      <button class="tbtn danger" id="delDrawBtn" title="حذف المحدد (Delete)">🗑 المحدد</button>
-      <button class="tbtn danger" id="clearDrawBtn" title="مسح كل الرسوم">مسح الرسوم</button>
-      <button class="tbtn danger" id="rpBtn" title="وضع الريبلاي — يعيد تشغيل الشموع شمعة بشمعة">⏵ ريبلاي</button>
-      <div class="sep"></div>
-      <button class="tbtn" id="importBtn" style="background:var(--accent);color:#fff">⬆ رفع الشموع</button>
-    </div>
-    <div id="chartWrap">
+
+    <div id="chartArea">
       <canvas id="chart"></canvas>
       <div id="legend"></div>
       <div id="hintbar"></div>
       <div id="replayBar" class="hidden">
         <button class="rbtn" id="rpToStart" title="إلى البداية">⏮</button>
-        <button class="rbtn" id="rpBack" title="خطوة للخلف">⏪</button>
+        <button class="rbtn" id="rpBack" title="خطوة للخلف (←)">⏪</button>
         <button class="rbtn play" id="rpPlay" title="تشغيل / إيقاف (مسافة)">⏵</button>
-        <button class="rbtn" id="rpFwd" title="خطوة للأمام">⏩</button>
+        <button class="rbtn" id="rpFwd" title="خطوة للأمام (→)">⏩</button>
         <select id="rpSpeed" title="سرعة التشغيل">
           <option value="1200">بطيء</option>
           <option value="500" selected>عادي</option>
@@ -160,19 +187,43 @@
         <button class="xbtn" id="rpExit" title="خروج من الريبلاي">✕</button>
       </div>
       <div id="emptyState">
-        <h2>📊 ابدأ على بياناتك</h2>
-        <p>أضف زوجًا من القائمة الجانبية ثم ارفع ملف الشموع الخاص به (CSV أو نص). كل ما ترفعه أو ترسمه يُحفظ تلقائيًا ويبقى في متصفحك حتى تحذفه بنفسك.</p>
+        <h2>ابدأ برفع شموعك</h2>
+        <p>أضف زوجًا من قائمة الأزواج ثم ارفع ملف الشموع الخاص به (CSV أو نص). كل ما ترفعه أو ترسمه يُحفظ تلقائيًا في متصفحك ويبقى حتى تحذفه بنفسك.</p>
         <div class="row">
           <button id="emptyImport">⬆ رفع ملف الشموع</button>
           <button id="emptySample" class="ghost">تجربة ببيانات تجريبية</button>
         </div>
       </div>
     </div>
-  </main>
+
+    <aside id="sidebar">
+      <div class="wl-head"><b>قائمة الأزواج</b><span id="wlCount"></span></div>
+      <form id="addForm">
+        <input id="newName" placeholder="اسم زوج جديد… EURUSD" autocomplete="off">
+        <button type="submit" title="إضافة زوج">＋</button>
+      </form>
+      <ul id="pairList"></ul>
+      <div class="wl-foot">
+        <span class="hint">انقر مرتين على الزوج لتغيير اسمه · زر ✕ يحذف الزوج وبياناته ورسومه نهائيًا (بសؤكد)</span>
+      </div>
+    </aside>
+  </div>
+
+  <div id="statusbar">
+    <span id="sbTool">المؤشر</span>
+    <span class="sepv"></span>
+    <span id="hintbar2"></span>
+    <div class="right">
+      <span>حفظ تلقائي محلي</span>
+      <span class="sepv"></span>
+      <span>v2 · بدون إنترنت</span>
+    </div>
+  </div>
 </div>
+
 <div id="overlay" class="hidden">
   <div id="modal">
-    <h3>⬆ رفع بيانات الشموع — <span id="modalPair"></span></h3>
+    <h3>⬆ رفع بيانات الشموع — <span id="modalPair" style="direction:ltr"></span></h3>
     <div class="fmt">time,open,high,low,close,volume<br>2024-01-15 10:00,1.0950,1.0961,1.0942,1.0957,1520<br>2024.01.15 10:30,1.0966,1.0971,1.0958,1.0963,990<br>1705312800,1.09,1.10,1.08,1.09,100</div>
     <input type="file" id="csvFile" accept=".csv,.txt,.tsv">
     <textarea id="csvText" placeholder="أو الصق البيانات هنا مباشرة…"></textarea>
@@ -181,11 +232,12 @@
       <label><input type="radio" name="mode" value="replace"> استبدال البيانات الحالية</label>
     </div>
     <div id="modalBtns">
-      <button class="tbtn primary" id="doImport">استيراد</button>
-      <button class="tbtn" id="cancelImport">إلغاء</button>
+      <button class="tbtnx primary" id="doImport">استيراد</button>
+      <button class="tbtnx" id="cancelImport">إلغاء</button>
     </div>
   </div>
 </div>
+
 <script>
 'use strict';
 let useLS=false,dbP=null;
@@ -488,6 +540,12 @@ function draw(){
   emptyEl.classList.toggle('hidden',!!(rec&&a.length));
   if(!rec||!a.length){legendEl.innerHTML='';return;}
   const [lo,hi]=priceRange()||[0,1];
+  if(a.length>1){
+    ctx.font='800 '+Math.max(40,Math.min(96,plotW()/9))+'px -apple-system,"Segoe UI",Arial,sans-serif';
+    ctx.fillStyle='rgba(42,46,57,.42)';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(rec.name,plotW()/2,plotH()/2);
+  }
   const [i0,i1]=visibleRange();
   const pStep=niceStep((hi-lo)/Math.max(3,ph/52));
   const pDec=stepDecimals(pStep);
@@ -1175,6 +1233,17 @@ new ResizeObserver(resize).observe(wrapEl);
   onSwitch();
 })();
 
+</script>
+<script>
+  const symEl=document.getElementById('symName');
+  new MutationObserver(()=>{
+    const s=legendEl.querySelector('.sym');
+    if(s)symEl.childNodes[1].nodeValue=' '+s.textContent;
+    const m=legendEl.innerHTML.match(/class="tf">([^<]+)</);
+    document.getElementById('sbTool').textContent=m?m[1]:'';
+    document.getElementById('hintbar2').textContent=hintEl.textContent;
+  }).observe(legendEl,{childList:true});
+  document.getElementById('sbToggle').addEventListener('click',()=>document.getElementById('app').classList.toggle('nosb'));
 </script>
 </body>
 </html>

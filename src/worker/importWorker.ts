@@ -42,7 +42,7 @@ self.onmessage = (ev: MessageEvent<ImportMsg>) => {
         return
       }
       if (req.kind === 'xlsx') {
-        const wb = XLSX.read(req.buffer as ArrayBuffer, { type: 'array' })
+        const wb = XLSX.read(new Uint8Array(req.buffer as ArrayBuffer), { type: 'array' })
         const sheetName = wb.SheetNames[0]
         const csv = XLSX.utils.sheet_to_csv(wb.Sheets[sheetName])
         const sug = suggestFromText(csv)
@@ -57,7 +57,7 @@ self.onmessage = (ev: MessageEvent<ImportMsg>) => {
     if (req.kind === 'json') {
       result = parseJsonText(req.text ?? '', req.opts.timezone)
     } else if (req.kind === 'xlsx') {
-      const wb = XLSX.read(req.buffer as ArrayBuffer, { type: 'array' })
+      const wb = XLSX.read(new Uint8Array(req.buffer as ArrayBuffer), { type: 'array' })
       const csv = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]])
       result = parseDelimited(csv, req.opts)
     } else {

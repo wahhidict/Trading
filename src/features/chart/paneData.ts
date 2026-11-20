@@ -79,19 +79,16 @@ async function loadRecords(symbol: string, tf: TfKey, metas: { symbol: string; t
   for (const cand of candidates) {
     const rec = await getDataset(cand.m.id)
     if (!rec || rec.candles.length < 2) continue
-    const base = slice(rec.candles.map(toK))
-    if (base.length < 2) continue
-    const cacheKey = `${cand.m.id}->${tf}:${base.length}:${base[base.length - 1].timestamp}`
-    const cached = aggCache.get(cacheKey)
-    if (cached) {
-      cacheFull(fullKey, cached)
-      return cached
+    const full = rec.candles.map(toK)
+    const cacheKey = `${cand.m.id}->${tf}:${full.length}:${full[full.length - 1].timestamp}`
+    let built = aggCache.get(cacheKey)
+    if (!built) {
+      built = resample(full.map((d) => ({ t: d.timestamp, o: d.open, h: d.high, l: d.low, c: d.close, v: d.volume ?? 0 })), tf).map(toK)
+      if (aggCache.size > 24) aggCache.clear()
+      aggCache.set(cacheKey, built)
     }
-    const built = resample(base.map((d) => ({ t: d.timestamp, o: d.open, h: d.high, l: d.low, c: d.close, v: d.volume ?? 0 })), tf).map(toK)
-    if (aggCache.size > 24) aggCache.clear()
-    aggCache.set(cacheKey, built)
     cacheFull(fullKey, built)
-    return built
+    return slice(built)
   }
   return null
 }

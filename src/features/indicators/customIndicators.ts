@@ -106,6 +106,8 @@ const adx: AdxTpl = {
   },
 }
 
+export const customTemplates = { vwap, atr, adx }
+
 let registered = false
 
 export function registerCustomIndicators(): void {

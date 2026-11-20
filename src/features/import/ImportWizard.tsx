@@ -3,6 +3,7 @@ import { ImportClient, fileKind, columnMapFields, type FileKind } from '../../co
 import type { ColumnMap, Candle, TfKey } from '../../core/types'
 import { TFDEFS } from '../../core/timeframes'
 import { putDataset, getDataset } from '../../core/db'
+import { mergeCandles } from '../../core/import/validate'
 import { useStore } from '../../state/store'
 import { useT } from '../../i18n'
 
@@ -139,8 +140,7 @@ export default function ImportWizard(): React.ReactNode {
       const existing = await getDataset(id)
       let candles = final_.candles
       if (existing && mode === 'merge') {
-        const merged = mergeIn(existing.candles, candles)
-        candles = merged
+        candles = mergeCandles(existing.candles, candles).candles
       }
       const record = {
         id, symbol: symbolName, tf: useTf,
@@ -309,13 +309,6 @@ export default function ImportWizard(): React.ReactNode {
       </div>
     </div>
   )
-}
-
-function mergeIn(existing: Candle[], incoming: Candle[]): Candle[] {
-  const map = new Map<number, Candle>()
-  for (const c of existing) map.set(c.t, c)
-  for (const c of incoming) map.set(c.t, c)
-  return [...map.values()].sort((a, b) => a.t - b.t)
 }
 
 function Stat({ label, value, tone }: { label: string; value: string; tone?: 'up' | 'down' }): React.ReactNode {

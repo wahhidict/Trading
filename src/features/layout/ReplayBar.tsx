@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useStore } from '../../state/store'
 import { useT } from '../../i18n'
-import { getDataset } from '../../core/db'
-import { getFullRows } from '../chart/paneData'
+import { getFullRows, loadPaneRecords } from '../chart/paneData'
 
 const SPEEDS = [1000, 500, 250, 100, 40]
 
@@ -61,24 +60,22 @@ export default function ReplayBar(): React.ReactNode {
 
   const begin = (): void => {
     const st = useStore.getState()
-    if (!pane?.symbol || !pane.tf) { setNotFound(true); return }
-    void getDataset(`${pane.symbol}__${pane.tf}`).then((rec) => {
-      if (!rec || rec.candles.length === 0) {
+    if (!pane?.symbol || !pane.tf || !st.metas.length) { setNotFound(true); return }
+    void loadPaneRecords(st.activePane, pane.symbol, pane.tf, pane.chartType, st.metas, null).then((rows) => {
+      if (!rows || rows.length === 0) {
         setNotFound(true)
         return
       }
       setNotFound(false)
-      if (startVal) {
-        const ts = new Date(startVal).getTime()
-        if (isFinite(ts)) {
-          const at = rec.candles.findIndex((c) => c.t >= ts)
-          const idx = at === -1 ? rec.candles.length - 1 : at
-          setReplay({ active: true, playing: false, startTime: rec.candles[idx].t, endTime: rec.candles[idx].t })
-          return
-        }
+      const target = startVal ? new Date(startVal).getTime() : null
+      if (target !== null && isFinite(target)) {
+        const idx = rows.findIndex((c) => c.timestamp as number >= target)
+        const at = idx === -1 ? rows.length - 1 : idx
+        setReplay({ active: true, playing: false, startTime: rows[at].timestamp as number, endTime: rows[at].timestamp as number })
+        return
       }
-      const from = Math.floor(rec.candles.length * 0.8)
-      setReplay({ active: true, playing: false, startTime: rec.candles[from].t, endTime: rec.candles[from].t })
+      const from = Math.floor(rows.length * 0.8)
+      setReplay({ active: true, playing: false, startTime: rows[from].timestamp as number, endTime: rows[from].timestamp as number })
     })
   }
 

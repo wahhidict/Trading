@@ -76,9 +76,9 @@ export interface TimeParts { y: number; mo: number; d: number; h: number; mi: nu
 export function parseTimeParts(s: string, dateFirst: boolean | null): TimeParts | null {
   const v = s.trim()
   if (!v) return null
-  let m = /^(\d{4})[-./](\d{1,2})[-./](\d{1,2})(?:[T ](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/.exec(v)
+  let m = /^(\d{4})[-./](\d{1,2})[-./](\d{1,2})(?:[T ](\d{1,2}):(\d{2})(?::(\d{2}))?(?:[.,](\d+))?)?(?:\s*(?:Z|[+-]\d{2}:?\d{2}))?$/i.exec(v)
   if (m) return { y: +m[1], mo: +m[2], d: +m[3], h: +(m[4] ?? 0), mi: +(m[5] ?? 0), s: +(m[6] ?? 0) }
-  m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[T ](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/.exec(v)
+  m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[T ](\d{1,2}):(\d{2})(?::(\d{2}))?(?:[.,](\d+))?)?$/i.exec(v)
   if (m) {
     let a = +m[1], b = +m[2]
     if (a > 12) { const tmp = a; a = b; b = tmp }
@@ -133,9 +133,15 @@ export function rowToCandle(
   if (map.tsCol >= 0) {
     const raw = cells[map.tsCol]?.trim() ?? ''
     const n = Number(raw)
-    if (!raw || !isFinite(n)) return { error: 'bad_time' }
-    t = n < 1e11 ? n * 1000 : n
-    if (!opts.epochIsUtc) t -= tzOffsetMinutes(opts.timezone, t) * 60000 - tzOffsetMinutes('UTC', t) * 0
+    if (raw && isFinite(n)) {
+      t = n < 1e11 ? n * 1000 : n
+      if (!opts.epochIsUtc) t -= tzOffsetMinutes(opts.timezone, t) * 60000
+    } else {
+      const parts = parseTimeParts(raw, opts.dateFirst)
+      if (!parts) return { error: 'bad_time' }
+      t = /[Zz]$/.test(raw) ? Date.parse(raw.replace(' ', 'T')) : toUtc(parts, opts.timezone)
+      if (!isFinite(t)) return { error: 'bad_time' }
+    }
   } else {
     const dv = map.dateCol >= 0 ? (cells[map.dateCol] ?? '') : ''
     const tv = map.timeCol >= 0 ? (cells[map.timeCol] ?? '') : ''
@@ -143,8 +149,12 @@ export function rowToCandle(
     if (parts && tv) {
       const hms = parseHMS(tv)
       if (hms) parts = { ...parts, h: hms.h, mi: hms.mi, s: hms.s }
+      else {
+        const combined = parseTimeParts(tv, opts.dateFirst)
+        if (combined) parts = combined
+      }
     }
-    if (!parts && !tv && map.dateCol >= 0) parts = parseTimeParts(dv.toLocaleUpperCase() === '' ? dv : dv, opts.dateFirst)
+    if (!parts && tv) parts = parseTimeParts(tv, opts.dateFirst)
     if (!parts) return { error: 'bad_time' }
     t = toUtc(parts, opts.timezone)
   }
